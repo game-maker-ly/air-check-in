@@ -6,8 +6,10 @@ on:
     # # UTC+8 08:00 +
     - cron: "0 0 * * *"
 jobs:
-  checkin:
-    name: Checkin
+  # 基础环境，包含安装依赖 
+  checkinbase:
+    name: Checkin ZODGAME
+    environment: ZODGAME
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,25 +28,35 @@ jobs:
 
       # zodgame签到
       - name: Run scheduled check-in(zodgame)
-        environment: ZODGAME
         env:
           COOKIE: ${{ secrets.COOKIE }}
           FORMHASH: ${{ secrets.FORMHASH }}
         shell: bash
         run: |
           node zodgame\main.js
-      # 69yun签到
-      - name: Run scheduled check-in(69yun)
-        environment: 69YUN
-        env:
-          JC_TYPE: ${{ secrets.JC_TYPE }} 
-          DOMAIN: ${{ secrets.DOMAIN }}  
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          TG_TOKEN: ${{ secrets.TG_TOKEN }}
-          TG_ID: ${{ secrets.TG_ID }}
-        run: |
-          node 69yun\main.js  
+  # 69云签到job
+  checkin2:
+  name: Checkin 69YUN
+  # 切换job环境
+  environment: 69YUN
+  runs-on: ubuntu-latest
+  needs: checkinbase
+  steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    # 69yun签到
+    - name: Run scheduled check-in(69yun)
+      env:
+        JC_TYPE: ${{ secrets.JC_TYPE }} 
+        DOMAIN: ${{ secrets.DOMAIN }}  
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        TG_TOKEN: ${{ secrets.TG_TOKEN }}
+        TG_ID: ${{ secrets.TG_ID }}
+      run: |
+        node 69yun\main.js  
+
   # workflow保活
   keepalive:
     name: Keepalive Workflow
