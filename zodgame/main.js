@@ -72,7 +72,7 @@ async function get_formhash(cookie) {
     method: "GET",
   });
   let formhash = await data.text();
-  console.log(formhash);
+  // console.log(formhash);
   let reg = /(?<=(formhash["'].*value.*=.*["'])).*(?=["'])/;
   formhash = formhash.match(reg)[0];
   console.log("已获取到formhash："+formhash);
