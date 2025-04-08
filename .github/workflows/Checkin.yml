@@ -19,9 +19,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: latest
-
+      # 缓存node_modules，用来job之间共享依赖
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-
       # 安装node依赖
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true' #如果命中缓存则不安装依赖
         run: |
           npm install
           npm install node-fetch
@@ -44,6 +53,16 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+
+    # 缓存node_modules，用来job之间共享依赖
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-
 
     # 69yun签到
     - name: Run scheduled check-in(69yun)
