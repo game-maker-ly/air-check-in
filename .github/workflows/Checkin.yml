@@ -33,7 +33,7 @@ jobs:
           FORMHASH: ${{ secrets.FORMHASH }}
         shell: bash
         run: |
-          node zodgame\main.js
+          node ./zodgame/main.js
   # 69云签到job
   checkin2:
     name: Checkin 69YUN
@@ -55,7 +55,7 @@ jobs:
         TG_TOKEN: ${{ secrets.TG_TOKEN }}
         TG_ID: ${{ secrets.TG_ID }}
       run: |
-        node 69yun\main.js  
+        node ./69yun/main.js  
 
   # workflow保活
   keepalive:
