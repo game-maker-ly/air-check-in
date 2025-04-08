@@ -1,0 +1,55 @@
+name: Scheduled Check-In Job
+
+on:
+  workflow_dispatch:  # 允许手动触发
+  schedule:
+    # # UTC+8 08:00 +
+    - cron: "0 0 * * *"
+jobs:
+  checkin:
+    name: Checkin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js latest.
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      # 安装node依赖
+      - name: Install dependencies
+        run: |
+          npm install
+
+      # zodgame签到
+      - name: Run scheduled check-in(zodgame)
+        environment: ZODGAME
+        env:
+          COOKIE: ${{ secrets.COOKIE }}
+          FORMHASH: ${{ secrets.FORMHASH }}
+        shell: bash
+        run: |
+          node zodgame\main.js
+      # 69yun签到
+      - name: Run scheduled check-in(69yun)
+        environment: 69YUN
+        env:
+          JC_TYPE: ${{ secrets.JC_TYPE }} 
+          DOMAIN: ${{ secrets.DOMAIN }}  
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_ID: ${{ secrets.TG_ID }}
+        run: |
+          node 69yun\main.js  
+  # workflow保活
+  keepalive:
+    name: Keepalive Workflow
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/keepalive-workflow@v2
