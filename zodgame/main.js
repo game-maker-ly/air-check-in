@@ -72,7 +72,8 @@ async function get_formhash(cookie) {
     method: "GET",
   });
   let formhash = await data.text();
-  let reg = /(?<=(name="formhash" value=")).*(?=("))/;
+  console.log(formhash);
+  let reg = /(?<=(formhash["'].*value.*=.*["'])).*(?=["'])/;
   formhash = formhash.match(reg)[0];
   console.log("已获取到formhash："+formhash);
   return formhash;
@@ -82,7 +83,6 @@ async function main() {
   let cookie, formhash;
   // cookie可以直接拿缓存的
   // 但是formhash随时在变动，得用脚本获取
-  process.env.COOKIE = "qhMq_2132_saltkey=ocSCNN39; qhMq_2132_lastvisit=1743923814; qhMq_2132_auth=4563jRl2hSf%2Ba%2BmuPxBjkcN1Zs16k5TNsHhfOhj7m6R7OXI%2FxM5xLmRedAO6ZCHrzAJTYGFg39dR%2BioS8QESclJ6kPY; qhMq_2132_lastcheckfeed=704142%7C1743927535; qhMq_2132_nofavfid=1; qhMq_2132_sid=lbQ7j6; qhMq_2132_lip=128.85.160.1%2C1743990677; qhMq_2132_onlineusernum=334; qhMq_2132_myrepeat_rr=R0; qhMq_2132_ulastactivity=c6a2BjWPUN0AA%2BfqfXDF3P3Sy6SBk8o6MrxLRaioLCuQC7EdkdEG; qhMq_2132_checkpm=1; qhMq_2132_sendmail=1; qhMq_2132_lastact=1744102841%09misc.php%09patch";
   if (process.env.COOKIE) {
     cookie = process.env.COOKIE;
     formhash = await get_formhash(cookie);
