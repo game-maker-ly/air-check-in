@@ -10,7 +10,7 @@ let jcType = '69yun69';
 let fetch, Response; 
 
 // 判断当前环境是否是 Node.js 环境
-if (typeof globalThis.fetch === "undefined") {
+if (true) {
   import('node-fetch').then(module => {
     fetch = module.default;
     Response = module.Response;

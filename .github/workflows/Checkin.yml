@@ -54,11 +54,6 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v4
 
-    - name: Use Node.js latest.
-      uses: actions/setup-node@v4
-      with:
-        node-version: latest
-
     # 缓存node_modules，用来job之间共享依赖
     - name: Cache node_modules
       id: cache-node-modules
