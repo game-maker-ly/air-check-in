@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A script to perform check-ins and send Telegram messages https://github.com/amclubs/am-check-in",
   "type": "module",
-  "main": "_worker.js",
+  "main": "69yun/main.js",
   "scripts": {
-    "start": "node _worker.js"
+    "start": "node 69yun/main.js"
   },
   "dependencies": {
     "node-fetch": "^3.2.0"  
