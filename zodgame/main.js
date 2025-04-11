@@ -62,6 +62,7 @@ async function checkIn(cookie, formhash) {
   checkIfSuccess(data);
 }
 
+// 代码本身没问题，但是很容易触发cloudflare验证
 async function get_formhash(cookie) {
   const data = await fetch("https://zodgame.xyz/", {
     headers: {
@@ -73,8 +74,8 @@ async function get_formhash(cookie) {
   });
   let formhash = await data.text();
   // console.log(formhash);
-  let reg = /(?<=(formhash["'].*value.*=.*["'])).*(?=["'])/;
-  formhash = formhash.match(reg)[0];
+  let reg = /name="formhash" value="([^"]+)"/;
+  formhash = formhash.match(reg)[1];  // 获取括号内的子串，就不需要繁琐的先行断言了
   console.log("已获取到formhash："+formhash);
   return formhash;
 }

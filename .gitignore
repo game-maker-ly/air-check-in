@@ -22,3 +22,6 @@ rad.json
 TestResults.xml
 #node_modules
 node_modules/
+
+开发日志.txt
+test.js
