@@ -3,8 +3,12 @@ name: Scheduled Check-In Job
 on:
   workflow_dispatch:  # 允许手动触发
   schedule:
-    # # UTC+8 08:00 +
-    - cron: "0 0 * * *"
+    # # UTC+8 08:00 +，八点太多脚本了，延后一个小时
+    - cron: "0 1 * * *"
+
+env:
+  node-version: '21.x'
+  
 jobs:
   # 基础环境，包含安装依赖 
   checkinbase:
@@ -15,22 +19,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js latest.
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: ${{ env.node-version }}
+        
       # 缓存node_modules，用来job之间共享依赖
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
+          # node-version找不到
+          key: ${{ runner.os }}-${{ env.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}-nodeModules-
+            ${{ runner.os }}-${{ env.node-version }}-nodeModules-
+      
       # 安装node依赖
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true' #如果命中缓存则不安装依赖
+      #如果命中缓存则不安装依赖
+        if: steps.cache-node-modules.outputs.cache-hit != 'true' 
         run: |
           npm install
           npm install node-fetch
@@ -39,21 +47,32 @@ jobs:
       - name: Run scheduled check-in(zodgame)
         env:
           COOKIE: ${{ secrets.COOKIE }}
-          FORMHASH: ${{ secrets.FORMHASH }}
         shell: bash
         run: |
           node ./zodgame/main.js
+  
   # 69云签到job
   checkin2:
     name: Checkin 69YUN
     # 切换job环境
     environment: 69YUN
     runs-on: ubuntu-latest
-    # 使用needs后，该job应该是共享上一个job的node环境和依赖的，不需要重新解压缓存
+    # 使用needs后，只共享nodejs环境，但是node依赖需要用缓存重新解压
     needs: checkinbase
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+
+    # 缓存node_modules，用来job之间共享依赖，这里必须每个job都写上
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        # node-version找不到
+        key: ${{ runner.os }}-${{ env.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.node-version }}-nodeModules-
 
     # 69yun签到
     - name: Run scheduled check-in(69yun)
