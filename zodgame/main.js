@@ -75,8 +75,13 @@ async function get_formhash(cookie) {
   let formhash = await data.text();
   // console.log(formhash);
   let reg = /name="formhash" value="([^"]+)"/;
-  formhash = formhash.match(reg)[1];  // 获取括号内的子串，就不需要繁琐的先行断言了
-  console.log("已获取到formhash："+formhash);
+  try {
+    formhash = formhash.match(reg)[1];  // 获取括号内的子串，就不需要繁琐的先行断言了
+    console.log("已获取到formhash："+formhash);
+  } catch (error) {
+    formhash = -1;
+    console.log("获取formhash失败，可能被cdn拦截！");
+  }
   return formhash;
 }
 
@@ -91,8 +96,10 @@ async function main() {
     console.log("COOKIE AND / OR FORMHASH NOT FOUND.");
     process.exit(1);
   }
-
-  checkIn(cookie, formhash);
+  if(formhash != -1){
+    // 如果未获取到formhash，则放弃签到
+    checkIn(cookie, formhash);
+  }
 }
 
 main();
