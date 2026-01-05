@@ -12,8 +12,9 @@ env:
 jobs:
   # 基础环境，包含安装依赖 
   checkinbase:
-    name: Checkin ZODGAME
-    environment: ZODGAME
+    name: Checkin 69YUN
+    # 切换job环境
+    environment: 69YUN
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -43,48 +44,52 @@ jobs:
           npm install
           npm install node-fetch
 
-      # zodgame签到
-      - name: Run scheduled check-in(zodgame)
+     # 69yun签到
+      - name: Run scheduled check-in(69yun)
         env:
-          COOKIE: ${{ secrets.COOKIE }}
-        shell: bash
+          JC_TYPE: ${{ secrets.JC_TYPE }} 
+          DOMAIN: ${{ secrets.DOMAIN }}  
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_ID: ${{ secrets.TG_ID }}
         run: |
-          node ./zodgame/main.js
+          node ./69yun/main.js  
   
   # 69云签到job
-  checkin2:
-    name: Checkin 69YUN
-    # 切换job环境
-    environment: 69YUN
-    runs-on: ubuntu-latest
-    # 使用needs后，只共享nodejs环境，但是node依赖需要用缓存重新解压
-    needs: checkinbase
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v4
+  # checkin2:
+  #   name: Checkin 69YUN
+  #   # 切换job环境
+  #   environment: 69YUN
+  #   runs-on: ubuntu-latest
+  #   # 使用needs后，只共享nodejs环境，但是node依赖需要用缓存重新解压
+  #   needs: checkinbase
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v4
 
-    # 缓存node_modules，用来job之间共享依赖，这里必须每个job都写上
-    - name: Cache node_modules
-      id: cache-node-modules
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        # node-version找不到
-        key: ${{ runner.os }}-${{ env.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-${{ env.node-version }}-nodeModules-
+  #   # 缓存node_modules，用来job之间共享依赖，这里必须每个job都写上
+  #   - name: Cache node_modules
+  #     id: cache-node-modules
+  #     uses: actions/cache@v4
+  #     with:
+  #       path: node_modules
+  #       # node-version找不到
+  #       key: ${{ runner.os }}-${{ env.node-version }}-nodeModules-${{ hashFiles('package-lock.json') }}-${{ hashFiles('package.json') }}
+  #       restore-keys: |
+  #         ${{ runner.os }}-${{ env.node-version }}-nodeModules-
 
-    # 69yun签到
-    - name: Run scheduled check-in(69yun)
-      env:
-        JC_TYPE: ${{ secrets.JC_TYPE }} 
-        DOMAIN: ${{ secrets.DOMAIN }}  
-        USERNAME: ${{ secrets.USERNAME }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-        TG_TOKEN: ${{ secrets.TG_TOKEN }}
-        TG_ID: ${{ secrets.TG_ID }}
-      run: |
-        node ./69yun/main.js  
+  #   # 69yun签到
+  #   - name: Run scheduled check-in(69yun)
+  #     env:
+  #       JC_TYPE: ${{ secrets.JC_TYPE }} 
+  #       DOMAIN: ${{ secrets.DOMAIN }}  
+  #       USERNAME: ${{ secrets.USERNAME }}
+  #       PASSWORD: ${{ secrets.PASSWORD }}
+  #       TG_TOKEN: ${{ secrets.TG_TOKEN }}
+  #       TG_ID: ${{ secrets.TG_ID }}
+  #     run: |
+  #       node ./69yun/main.js  
 
   # workflow保活，已失效
   # keepalive:
